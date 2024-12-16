@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CCF5FF">
+
+    <!-- Toolbar with Hamburger Menu -->
+    <ImageButton
+        android:id="@+id/btn_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_menu"
+        android:contentDescription="Menu Icon" />
+
+    <!-- Welcome Text -->
+    <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_menu"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Welcome !"
+        android:textColor="#000"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Registration Card -->
+    <RelativeLayout
+        android:id="@+id/card_register"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_welcome"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="#3C80BC"
+        android:padding="16dp">
+
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/tv_username_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name :"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/et_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_username_label"
+            android:hint="Enter user name"
+            android:padding="8dp"
+            android:background="@android:color/white" />
+
+        <!-- Password -->
+        <TextView
+            android:id="@+id/tv_password_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/et_username"
+            android:layout_marginTop="10dp"
+            android:text="Password :"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_password_label"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:padding="8dp"
+            android:background="@android:color/white" />
+
+        <!-- Re-enter Password -->
+        <TextView
+            android:id="@+id/tv_repassword_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/et_password"
+            android:layout_marginTop="10dp"
+            android:text="Re-enter Password :"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/et_repassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_repassword_label"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:padding="8dp"
+            android:background="@android:color/white" />
+    </RelativeLayout>
+
+    <!-- Register Button -->
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card_register"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Register"
+        android:backgroundTint="#1565C0"
+        android:textColor="#FFF" />
+</RelativeLayout>

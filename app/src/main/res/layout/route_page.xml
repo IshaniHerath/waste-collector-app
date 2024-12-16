@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CCF5FF">
+
+    <!-- Toolbar with Hamburger Menu -->
+    <ImageButton
+        android:id="@+id/btn_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_menu"
+        android:contentDescription="Menu Icon" />
+
+    <!-- Page Title -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/btn_menu"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
+        android:text="Your Route"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Back Arrow -->
+
+    <!-- MapView -->
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tv_title"
+        android:layout_marginTop="10dp"
+        android:contentDescription="Map showing the route and locations" />
+
+    <!-- Custom Info Window Popup -->
+    <RelativeLayout
+        android:id="@+id/info_window"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        android:background="#AFC7E0"
+        android:padding="10dp"
+        android:elevation="4dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_bin_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bin filled level : 80%"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_bin_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_bin_level"
+            android:layout_marginTop="8dp"
+            android:text="Type : Food"
+            android:textColor="#000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_bin_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_bin_type"
+            android:layout_marginTop="8dp"
+            android:text="Location : 59.379474, 17.955720"
+            android:textColor="#000"
+            android:textSize="14sp" />
+    </RelativeLayout>
+</RelativeLayout>
