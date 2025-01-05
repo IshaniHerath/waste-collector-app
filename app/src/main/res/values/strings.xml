@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">WasteCollector</string>
+
+
+    <!-- Dashboard page -->
+    <string-array name="locations">
+        <item>Please select</item>
+        <item>Spånga</item>
+        <item>Bromma</item>
+        <item>Kista</item>
+        <item>Rinkeby</item>
+        <item>Rissne</item>
+        <item>Barkarby</item>
+        <item>Sollentuna</item>
+        <item>Sundbyberg</item>
+        <item>Villingby</item>
+    </string-array>
+
+
+
+    <!-- for google map -->
+    <string name="google_maps_api_key">YOUR_API_KEY</string>
+
 </resources>
