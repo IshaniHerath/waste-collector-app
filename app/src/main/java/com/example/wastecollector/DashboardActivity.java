@@ -1,17 +1,13 @@
 package com.example.wastecollector;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class DashboardActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -25,7 +21,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-  EdgeToEdge.enable(this);
+        //EdgeToEdge.enable(this);
         setContentView(R.layout.dashboard_page);
 
         // Initialize views
@@ -40,6 +36,9 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         txv_readybins.setText("_");
         txv_notreadybins.setText("_");
         txv_unfilledbins.setText("_");
+
+        // Call Sheets API to read the Google Sheet
+        SheetsHelper.readGoogleSheetAsync(this);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
