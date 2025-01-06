@@ -1,12 +1,15 @@
 package com.example.wastecollector;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     private TextView txv_readybins;
     private TextView txv_notreadybins;
     private TextView txv_unfilledbins;
+    private Button loginButton;
+
 
     Map<String, Integer> binCountByLocation;
     List<List<Object>> binDetails;
@@ -40,6 +45,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         txv_readybins = (TextView) findViewById(R.id.tv_ready_collect_value);
         txv_notreadybins = (TextView) findViewById(R.id.tv_ready_soon_value);
         txv_unfilledbins = (TextView) findViewById(R.id.tv_unfilled_value);
+        loginButton = (Button) findViewById(R.id.btn_get_route);
 
         // Set initial values to empty
         txv_fullbins.setText("0");
@@ -66,6 +72,12 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         locationDropDown.setAdapter(adapter);
         locationDropDown.setOnItemSelectedListener(this);
+
+        loginButton.setOnClickListener(v -> {
+            // Navigate to RouteActivity
+            Intent intent = new Intent(DashboardActivity.this, RouteActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
