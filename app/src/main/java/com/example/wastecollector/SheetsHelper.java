@@ -12,23 +12,33 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SheetsHelper {
 
     private static final String TAG = "SheetsHelper";
-
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public static void readGoogleSheetAsync(final Context context) {
+    private static List<List<Object>> FilledData;
+    private static List<List<Object>> BinData;
+
+    public interface DataFetchListener {
+        void onDataFetched();
+    }
+
+    public static void readGoogleSheetAsync(final Context context, final DataFetchListener listener) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                // Network operation here (reading the Google Sheet)
                 readGoogleSheet(context);
+                if (listener != null)
+                    listener.onDataFetched();
             }
         });
     }
@@ -50,8 +60,8 @@ public class SheetsHelper {
 
             // Google Sheet ID and range
             String spreadsheetId = "1pCTE0LoIWiNHdUKFZ59DbThcM_xU59h7xQBLw5JKv0Y"; // Sheet ID - from the share link
-            String Sheet1 = "BinFillLevels!A1:D10"; // Range And Sheet name
-            String Sheet2 = "BinDetails!A1:D10"; // Range And Sheet name
+            String Sheet1 = "BinFillLevels!B2:D30"; // Range And Sheet name
+            String Sheet2 = "BinDetails!A2:D20"; // Range And Sheet name
 
             // Fetch data from the Google Sheet
             ValueRange BinFillLevelsDetails = sheetsService.spreadsheets().values()
@@ -63,33 +73,75 @@ public class SheetsHelper {
                     .get(spreadsheetId, Sheet2)
                     .execute();
 
-            List<List<Object>> FilledData = BinFillLevelsDetails.getValues();
-            List<List<Object>> BinData = BinDetails.getValues();
-            System.out.println("GGGGGGGGGGGGGG");
-            getBinCountByArea(BinData);
+            FilledData = BinFillLevelsDetails.getValues();
+            BinData = BinDetails.getValues();
 
-
-            //TODO - take this out to a separate method
-//            // Process the rows
-//            if (FilledData == null || FilledData.isEmpty()) {
-//                Log.d(TAG, "No data found in the sheet.");
-//            } else {
-//                for (List<Object> row : FilledData) {
-//                    Log.d(TAG, "Row: " + row.toString());
-//                }
-//            }
         } catch (Exception e) {
             Log.e(TAG, "Error reading Google Sheet", e);
         }
     }
 
-    public static void getBinCountByArea(List<List<Object>> binData) {
+    public static Map<String, Integer> getBinCountByArea(List<List<Object>> binData) {
+        Map<String, Integer> binCountByLocation = new HashMap<>();
+
         if (binData != null) {
             for (List<Object> bin : binData) {
-                //TODO
-                //if(bin.get(1) == '')
-                Log.d(TAG, "Row: " + bin.get(1));
+                String location = (String) bin.get(1);  //(0 = Bin_ID, 1 = Bin_Location)
+
+                // If the location already exists in the map, increment the count
+                if (binCountByLocation.containsKey(location)) {
+                    binCountByLocation.put(location, binCountByLocation.get(location) + 1);
+                } else {
+                    // If the location is not in the map, add it with an initial count of 1
+                    binCountByLocation.put(location, 1);
+                }
             }
         }
+        return binCountByLocation;
+    }
+
+    // Method to retrieve binCountByLocation
+    public static Map<String, Integer> getBinCountByLocation() {
+        return getBinCountByArea(BinData);
+    }
+
+    public static List<List<Object>> getBinDetails() {
+        return BinData;
+    }
+
+    public static List<List<Object>> getBinFilledDetails() {
+        // Result list to store the latest filled details
+        List<List<Object>> latestFilledDetails = new ArrayList<>();
+
+        if (FilledData != null && !FilledData.isEmpty()) {
+            // Map to store the latest entry for each binId
+            Map<String, List<Object>> latestEntries = new HashMap<>();
+
+            for (List<Object> entry : FilledData) {
+                if (entry.size() >= 3) {
+                    String binId = entry.get(0).toString(); // Bin ID
+                    String timestamp = entry.get(2).toString(); // Timestamp
+
+                    // Check if this binId already exists in the map
+                    if (latestEntries.containsKey(binId)) {
+                        // Compare timestamps to determine the latest entry
+                        String existingTimestamp = latestEntries.get(binId).get(2).toString();
+                        if (timestamp.compareTo(existingTimestamp) > 0) { // Newer timestamp
+                            latestEntries.put(binId, entry);
+                        }
+                    } else {
+                        // Add new binId to the map
+                        latestEntries.put(binId, entry);
+                    }
+                }
+            }
+
+            // Convert the map values to a list, excluding the timestamp
+            for (List<Object> entry : latestEntries.values()) {
+                List<Object> simplifiedEntry = List.of(entry.get(0), entry.get(1)); // Include only binId and filledLevel
+                latestFilledDetails.add(simplifiedEntry);
+            }
+        }
+        return latestFilledDetails;
     }
 }
