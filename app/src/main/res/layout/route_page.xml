@@ -7,18 +7,14 @@
     android:background="#CCF5FF">
 
     <!-- Toolbar with Hamburger Menu -->
-
-    <!-- Page Title -->
     <ImageButton
         android:id="@+id/btn_menu"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_alignParentStart="true"
-        android:layout_margin="16dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginEnd="16dp"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="20dp"
         android:contentDescription="Menu Icon"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_menu" />
 
     <TextView
@@ -26,7 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/btn_menu"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="120dp"
         android:layout_centerHorizontal="true"
         android:text="Your Route"
         android:textColor="#000"

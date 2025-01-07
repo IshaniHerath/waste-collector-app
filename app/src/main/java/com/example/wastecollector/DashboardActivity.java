@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +28,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     private TextView txv_notreadybins;
     private TextView txv_unfilledbins;
     private Button loginButton;
+    private ImageButton btn_menu;
 
 
     Map<String, Integer> binCountByLocation;
@@ -46,6 +49,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         txv_notreadybins = (TextView) findViewById(R.id.tv_ready_soon_value);
         txv_unfilledbins = (TextView) findViewById(R.id.tv_unfilled_value);
         loginButton = (Button) findViewById(R.id.btn_get_route);
+        btn_menu = findViewById(R.id.btn_menu);
 
         // Set initial values to empty
         txv_fullbins.setText("0");
@@ -78,6 +82,35 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
             Intent intent = new Intent(DashboardActivity.this, RouteActivity.class);
             startActivity(intent);
         });
+
+        btn_menu.setOnClickListener(v -> showPopupMenu(v));
+    }
+
+    // New Method: Show Popup Menu
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenu().add("Go Back");
+        popupMenu.getMenu().add("Logout");
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getTitle().toString()) {
+                case "Go Back":
+                    onBackPressed(); // Navigate back
+                    return true;
+                case "Logout":
+                    logoutUser();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void logoutUser() {
+        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     @Override
