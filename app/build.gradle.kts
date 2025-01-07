@@ -53,5 +53,9 @@ dependencies {
     implementation("com.google.api-client:google-api-client:1.34.1")
     implementation ("com.google.apis:google-api-services-sheets:v4-rev20241203-2.0.0")
 
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    //MAP
+    implementation("org.osmdroid:osmdroid-android:6.1.12") // For OpenStreetMap
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")  // For making API calls
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // For JSON response parsing
+    implementation("com.squareup.okhttp3:okhttp:4.10.0") // For HTTP requests
 }

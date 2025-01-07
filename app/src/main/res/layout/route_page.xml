@@ -30,19 +30,14 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- Back Arrow -->
-
-    <!-- MapView -->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tv_title"
-        android:layout_marginTop="10dp"
-        android:contentDescription="Map showing the route and locations" />
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp" />
 
     <!-- Custom Info Window Popup -->
-    <RelativeLayout
+    <!--<RelativeLayout
         android:id="@+id/info_window"
         android:layout_width="200dp"
         android:layout_height="120dp"
@@ -79,5 +74,5 @@
             android:text="Location : 59.379474, 17.955720"
             android:textColor="#000"
             android:textSize="14sp" />
-    </RelativeLayout>
+    </RelativeLayout> -->
 </RelativeLayout>
