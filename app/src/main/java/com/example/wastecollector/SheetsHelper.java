@@ -61,7 +61,7 @@ public class SheetsHelper {
             // Google Sheet ID and range
             String spreadsheetId = "1pCTE0LoIWiNHdUKFZ59DbThcM_xU59h7xQBLw5JKv0Y"; // Sheet ID - from the share link
             String Sheet1 = "BinFillLevels!B2:D30"; // Range And Sheet name
-            String Sheet2 = "BinDetails!A2:D20"; // Range And Sheet name
+            String Sheet2 = "BinDetails!A2:E20"; // Range And Sheet name
 
             // Fetch data from the Google Sheet
             ValueRange BinFillLevelsDetails = sheetsService.spreadsheets().values()

@@ -29,9 +29,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RouteActivity extends AppCompatActivity {
     private ImageButton btn_menu;
     private MapView mapView;
@@ -41,6 +38,14 @@ public class RouteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_page);
 
+        ArrayList<ArrayList<Object>> binDetails =
+                (ArrayList<ArrayList<Object>>) getIntent().getSerializableExtra("binDetails");
+
+        ArrayList<ArrayList<Object>> binFilledDetails =
+                (ArrayList<ArrayList<Object>>) getIntent().getSerializableExtra("binFilledDetails");
+
+        Log.d("RouteActivity", "Bin Details: " + binDetails);
+        Log.d("RouteActivity", "Filled Details: " + binFilledDetails);
 
         // Initialize OSMDroid configuration
         Configuration.getInstance().setUserAgentValue(getPackageName());
@@ -52,26 +57,76 @@ public class RouteActivity extends AppCompatActivity {
         controller.setZoom(12);
         controller.setCenter(new GeoPoint(59.3293, 18.0686)); // Center on Stockholm
 
-        // Add markers for starting location and destinations
-        addMarker(59.4014, 17.9397); // Kista (Starting point)
-        addMarker(59.4018, 17.9307); // Spånga
-        addMarker(59.4014, 17.9046); // Barkarby
-        addMarker(59.3416, 18.0391); // Odenplan
+        // Extract the coordinates from binDetails and add markers
+        if (binDetails != null && !binDetails.isEmpty()) {
+            for (ArrayList<Object> bin : binDetails) {
+                if (bin.size() >= 4) { // Ensure there are enough elements (ID, Location, Type, Latitude, Longitude)
 
-        // Initialize Retrofit and the OSRM API Service
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://router.project-osrm.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                    // Latitude and Longitude as Strings
+                    String latString = (String) bin.get(3); // Latitude as String
+                    String lonString = (String) bin.get(4); // Longitude as String
 
-        OSRMApiService osrmService = retrofit.create(OSRMApiService.class);
+                    // Convert Strings to Doubles
+                    double lat = Double.parseDouble(latString); // Convert to double
+                    double lon = Double.parseDouble(lonString); // Convert to double
 
-        // Call your API to get the optimized route
-        getOptimizedRoute(osrmService);
+                    Log.d("RouteActivity", "Bin: " + lat);
+                    Log.d("RouteActivity", "Bin: " + lon);
+
+                    addMarker(lat, lon); // Add marker for the bin location
+                }
+            }
+
+            addMarker(59.3978464, 17.9414171); // Example fixed start point
+
+            // Initialize Retrofit and the OSRM API Service
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://router.project-osrm.org/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            OSRMApiService osrmService = retrofit.create(OSRMApiService.class);
+
+            // Generate the route coordinates from binDetails
+            String coordinates = "17.9414171,59.3978464"; // Fixed start point
+            for (ArrayList<Object> bin : binDetails) {
+                if (bin != null && bin.size() >= 5) {
+                    String latString = (String) bin.get(3); // Latitude as String
+                    String lonString = (String) bin.get(4); // Longitude as String
+
+                    try {
+                        // Ensure we parse the coordinates as Double and handle invalid values
+                        double lat = parseCoordinate(latString);
+                        double lon = parseCoordinate(lonString);
+                        coordinates += ";" + lon + "," + lat; // Append bin locations
+                    } catch (NumberFormatException e) {
+                        Log.e("RouteActivity", "Error parsing latitude/longitude", e);
+                    }
+                }
+            }
+
+            coordinates += ";17.914624,59.4051103"; // Example end point
+
+            // Now get the optimized route using Retrofit...
+            getOptimizedRoute(osrmService, coordinates);
+        }
 
 
         btn_menu = findViewById(R.id.btn_menu);
         btn_menu.setOnClickListener(v -> showPopupMenu(v));
+    }
+
+    // Helper method to parse coordinates safely
+    private double parseCoordinate(String coordinate) throws NumberFormatException {
+        if (coordinate != null && !coordinate.isEmpty()) {
+            try {
+                return Double.parseDouble(coordinate); // Try parsing the String to Double
+            } catch (NumberFormatException e) {
+                throw new NumberFormatException("Invalid coordinate value: " + coordinate); // Rethrow with a custom message
+            }
+        } else {
+            throw new NumberFormatException("Empty or null coordinate: " + coordinate); // Handle empty or null strings
+        }
     }
 
     // Popup Menu
@@ -96,13 +151,8 @@ public class RouteActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-
-
-    private void getOptimizedRoute(OSRMApiService osrmService) {
-        // Coordinates for Kista, Spånga, Barkarby, Odenplan (in lon,lat format)
-        String coordinates = "17.9397,59.4014;17.9307,59.4018;17.9046,59.4014;18.0391,59.3416";
-
-        // Make the request to get the optimized route
+    private void getOptimizedRoute(OSRMApiService osrmService, String coordinates) {
+        // Call the OSRM API to get the optimized route
         Call<RouteResponse> call = osrmService.getRoute(coordinates);
         call.enqueue(new Callback<RouteResponse>() {
             @Override
@@ -131,6 +181,22 @@ public class RouteActivity extends AppCompatActivity {
         Marker marker = new Marker(mapView);
         marker.setPosition(new GeoPoint(lat, lon));
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        // Set a click listener to show latitude and longitude in the popup
+        marker.setOnMarkerClickListener((marker1, mapView1) -> {
+            // Get the latitude and longitude
+            double markerLat = marker1.getPosition().getLatitude();
+            double markerLon = marker1.getPosition().getLongitude();
+
+            // Display the coordinates in the marker's title
+            marker1.setTitle("Lat: " + markerLat + ", Lon: " + markerLon);
+
+            // Show the popup
+            marker1.showInfoWindow();
+
+            // Return true to indicate the click event was handled
+            return true;
+        });
 
         // Add the marker to the map
         mapView.getOverlays().add(marker);

@@ -27,10 +27,10 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     private TextView txv_readybins;
     private TextView txv_notreadybins;
     private TextView txv_unfilledbins;
-    private Button loginButton;
+    private Button routeNavigatButton;
     private ImageButton btn_menu;
-
-
+    List<List<Object>> filteredBins = new ArrayList<>(); //TODO: check if List<List<Object>> can convert to List<Object>
+    List<Object>  binFilledValues = new ArrayList<>();
     Map<String, Integer> binCountByLocation;
     List<List<Object>> binDetails;
     List<List<Object>> binFilledDetails;
@@ -48,7 +48,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         txv_readybins = (TextView) findViewById(R.id.tv_ready_collect_value);
         txv_notreadybins = (TextView) findViewById(R.id.tv_ready_soon_value);
         txv_unfilledbins = (TextView) findViewById(R.id.tv_unfilled_value);
-        loginButton = (Button) findViewById(R.id.btn_get_route);
+        routeNavigatButton = (Button) findViewById(R.id.btn_get_route);
         btn_menu = findViewById(R.id.btn_menu);
 
         // Set initial values to empty
@@ -77,9 +77,23 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
         locationDropDown.setAdapter(adapter);
         locationDropDown.setOnItemSelectedListener(this);
 
-        loginButton.setOnClickListener(v -> {
+        routeNavigatButton.setOnClickListener(v -> {
+
+            ArrayList<ArrayList<Object>> serializableBinList = new ArrayList<>();
+            for (List<Object> sublist : filteredBins) {
+                serializableBinList.add(new ArrayList<>(sublist));
+            }
+
+            ArrayList<ArrayList<Object>> serializableFilledList = new ArrayList<>();
+            for (Object obj : binFilledValues) {
+                serializableFilledList.add(new ArrayList<>((List<Object>) obj));
+            }
+
             // Navigate to RouteActivity
             Intent intent = new Intent(DashboardActivity.this, RouteActivity.class);
+            intent.putExtra("binDetails", serializableBinList);
+            intent.putExtra("binFilledDetails", serializableFilledList);
+
             startActivity(intent);
         });
 
@@ -133,8 +147,6 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
             return;
         }
 
-        List<List<Object>> filteredBins = new ArrayList<>();
-        List<Object> binFilledValues = new ArrayList<>();
         Map<String, List<Object>> binIdToDetailsMap = new HashMap<>();
 
         // Filter binDetails by selectedLocation
