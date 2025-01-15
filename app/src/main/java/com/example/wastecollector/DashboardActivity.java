@@ -31,6 +31,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     private ImageButton btn_menu;
     List<List<Object>> filteredBins = new ArrayList<>(); //TODO: check if List<List<Object>> can convert to List<Object>
     List<Object>  binFilledValues = new ArrayList<>();
+    List<Object> readyForCollectBins = new ArrayList<>();
     Map<String, Integer> binCountByLocation;
     List<List<Object>> binDetails;
     List<List<Object>> binFilledDetails;
@@ -85,7 +86,7 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
             }
 
             ArrayList<ArrayList<Object>> serializableFilledList = new ArrayList<>();
-            for (Object obj : binFilledValues) {
+            for (Object obj : readyForCollectBins) {
                 serializableFilledList.add(new ArrayList<>((List<Object>) obj));
             }
 
@@ -130,6 +131,11 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
         selectedLocation = adapterView.getItemAtPosition(position).toString();
+        // Clear lists to avoid carrying over old data
+        filteredBins.clear();
+        binFilledValues.clear();
+        readyForCollectBins.clear();
+
         updateTotalBins();
         updateFillDetails();
     }
@@ -193,6 +199,8 @@ public class DashboardActivity extends AppCompatActivity implements AdapterView.
                         // Classify based on fill percentage
                         if (fillPercentage > 75) {
                             readyForCollectCount++;
+                            readyForCollectBins.add(binData);
+
                         } else if (fillPercentage < 50) {
                             unfilledBinsCount++;
                         } else if (fillPercentage >= 50 && fillPercentage <= 75) {

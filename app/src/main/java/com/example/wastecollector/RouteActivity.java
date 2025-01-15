@@ -31,6 +31,7 @@ import retrofit2.http.Path;
 
 public class RouteActivity extends AppCompatActivity {
     private ImageButton btn_menu;
+    ArrayList<ArrayList<Object>> binFilteredDetails = new ArrayList<>();
     private MapView mapView;
 
     @Override
@@ -55,11 +56,14 @@ public class RouteActivity extends AppCompatActivity {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         IMapController controller = mapView.getController();
         controller.setZoom(12);
-        controller.setCenter(new GeoPoint(59.3293, 18.0686)); // Center on Stockholm
+        controller.setCenter(new GeoPoint(59.3978464, 17.9414171)); // Starting point - Center on Stockholm
+
+        binFilteredDetails = FilterFilledBindDetails(binFilledDetails, binDetails);
+
 
         // Extract the coordinates from binDetails and add markers
-        if (binDetails != null && !binDetails.isEmpty()) {
-            for (ArrayList<Object> bin : binDetails) {
+        if (binFilteredDetails != null && !binFilteredDetails.isEmpty()) {
+            for (ArrayList<Object> bin : binFilteredDetails) {
                 if (bin.size() >= 4) { // Ensure there are enough elements (ID, Location, Type, Latitude, Longitude)
 
                     // Latitude and Longitude as Strings
@@ -76,8 +80,7 @@ public class RouteActivity extends AppCompatActivity {
                     addMarker(lat, lon); // Add marker for the bin location
                 }
             }
-
-            addMarker(59.3978464, 17.9414171); // Example fixed start point
+            addMarker(59.3978464, 17.9414171); // Fixed start point
 
             // Initialize Retrofit and the OSRM API Service
             Retrofit retrofit = new Retrofit.Builder()
@@ -111,9 +114,27 @@ public class RouteActivity extends AppCompatActivity {
             getOptimizedRoute(osrmService, coordinates);
         }
 
-
         btn_menu = findViewById(R.id.btn_menu);
         btn_menu.setOnClickListener(v -> showPopupMenu(v));
+    }
+
+    private ArrayList<ArrayList<Object>>  FilterFilledBindDetails(ArrayList<ArrayList<Object>> binFilledDetails, ArrayList<ArrayList<Object>> binDetails){
+        // Filter binDetails to include only those with matching IDs in binFilledDetails
+        ArrayList<ArrayList<Object>> binFilteredDetails = new ArrayList<>();
+
+        if (binFilledDetails != null && !binFilledDetails.isEmpty() && binDetails != null && !binDetails.isEmpty()) {
+            for (ArrayList<Object> binDetail : binDetails) {
+                if (binDetail.size() >= 1) {
+                    String binId = (String) binDetail.get(0); // Assume the first element is the ID
+                    for (ArrayList<Object> filledDetail : binFilledDetails) {
+                        if (filledDetail.size() >= 1 && binId.equals(filledDetail.get(0))) {
+                            binFilteredDetails.add(binDetail);
+                        }
+                    }
+                }
+            }
+        }
+        return binFilteredDetails;
     }
 
     // Helper method to parse coordinates safely
