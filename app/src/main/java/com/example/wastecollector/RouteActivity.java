@@ -205,22 +205,48 @@ public class RouteActivity extends AppCompatActivity {
 
         // Set a click listener to show latitude and longitude in the popup
         marker.setOnMarkerClickListener((marker1, mapView1) -> {
-            // Get the latitude and longitude
-            double markerLat = marker1.getPosition().getLatitude();
-            double markerLon = marker1.getPosition().getLongitude();
 
-            // Display the coordinates in the marker's title
-            marker1.setTitle("Lat: " + markerLat + ", Lon: " + markerLon);
-
-            // Show the popup
-            marker1.showInfoWindow();
-
+            SetMarkerPopUpValues(marker1);
             // Return true to indicate the click event was handled
             return true;
         });
 
         // Add the marker to the map
         mapView.getOverlays().add(marker);
+    }
+
+    protected void SetMarkerPopUpValues(Marker marker1) {
+        // Get the latitude and longitude
+        double markerLat = marker1.getPosition().getLatitude();
+        double markerLon = marker1.getPosition().getLongitude();
+
+        //get bin type and filled level to the box
+        String binType = "Unknown";
+        String binFilledLevel = "Unknown";
+        // Iterate through binFilteredDetails to find the matching bin
+        for (ArrayList<Object> bin : binFilteredDetails) {
+            if (bin.size() >= 5) { // Ensure valid data
+                try {
+                    double binLat = Double.parseDouble((String) bin.get(3)); // Latitude
+                    double binLon = Double.parseDouble((String) bin.get(4)); // Longitude
+
+                    // Check if the lat/lon matches the marker's position
+                    if (Math.abs(binLat - markerLat) < 0.0001 && Math.abs(binLon - markerLon) < 0.0001) {
+                        binType = (String) bin.get(2);
+                        binFilledLevel = ""; // TODO
+                        break; // Exit loop once a match is found
+                    }
+                } catch (NumberFormatException e) {
+                    Log.e("RouteActivity", "Error parsing bin coordinates", e);
+                }
+            }
+        }
+
+        // Display the coordinates in the marker's title
+        marker1.setTitle("Lat: " + markerLat + ", Lon: " + markerLon + "\nBin Type: " + binType + "\nBin Filled Level: " + binFilledLevel);
+
+        // Show the popup
+        marker1.showInfoWindow();
     }
 
     public interface OSRMApiService {
